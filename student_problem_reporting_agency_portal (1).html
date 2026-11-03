@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduResolve | Student Grievance & Resolution Network</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter & JetBrains Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .font-mono-code {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        /* Custom vibrant scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090d16;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 9999px;
+            border: 2px solid #090d16;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0ea5e9;
+        }
+        /* Gradient mesh glow background */
+        .bg-mesh-glow {
+            background-size: 40px 40px;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(14, 165, 233, 0.15) 0%, transparent 45%),
+                radial-gradient(circle at 85% 85%, rgba(16, 185, 129, 0.12) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 60%),
+                linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-full flex flex-col justify-between antialiased selection:bg-emerald-500 selection:text-slate-950 bg-mesh-glow">
+
+    <!-- HEADER / NAVIGATION BAR -->
+    <header class="border-b border-slate-800/80 bg-slate-900/80 backdrop-blur-xl sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                
+                <!-- BRAND LOGO -->
+                <div class="flex items-center space-x-3 cursor-pointer group" onclick="handleLogoClick()">
+                    <div class="w-11 h-11 bg-gradient-to-tr from-teal-500 via-emerald-400 to-cyan-400 text-slate-950 rounded-xl flex items-center justify-center font-black text-xl tracking-tighter shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform duration-200">
+                        ER
+                    </div>
+                    <div>
+                        <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent block leading-none">EduResolve</span>
+                        <span class="text-[11px] text-teal-400 font-mono-code block mt-1 tracking-wider uppercase font-semibold">Grievance Portal</span>
+                    </div>
+                </div>
+
+                <!-- MAIN NAV LINKS (DYNAMIC BASED ON AUTH) -->
+                <nav class="hidden md:flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider">
+                    <button id="navSubmit" onclick="switchTab('submitTab')" class="nav-btn px-4 py-2.5 rounded-xl border border-teal-500/50 bg-teal-500/10 text-teal-300 font-bold transition flex items-center space-x-2 shadow-sm">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        <span>New Report</span>
+                    </button>
+                    <button id="navMyReports" onclick="switchTab('myReportsTab')" class="nav-btn px-4 py-2.5 rounded-xl border border-transparent text-slate-400 hover:text-white hover:bg-slate-800/50 transition flex items-center space-x-2">
+                        <i class="fa-solid fa-folder-closed text-xs"></i>
+                        <span>My Reports</span>
+                    </button>
+                    <button id="navAgency" onclick="switchTab('agencyAuthTab')" class="nav-btn px-4 py-2.5 rounded-xl border border-transparent text-slate-400 hover:text-white hover:bg-slate-800/50 transition flex items-center space-x-2">
+                        <i class="fa-solid fa-shield-halved text-xs"></i>
+                        <span>Agency Access</span>
+                    </button>
+                </nav>
+
+                <!-- USER ACCOUNT CONTROLS -->
+                <div class="flex items-center space-x-3">
+                    <div id="userBadge" class="hidden items-center space-x-2 bg-slate-900 border border-slate-700/80 px-3 py-1.5 rounded-xl text-xs font-mono-code">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-sm shadow-emerald-400"></span>
+                        <span id="userNameDisplay" class="text-slate-200 font-bold">User</span>
+                    </div>
+                    <button id="authHeaderBtn" onclick="openAuthModal('login')" class="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-950 font-extrabold text-xs uppercase px-4 py-2.5 rounded-xl transition-all shadow-md shadow-teal-500/20 flex items-center space-x-2">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                        <span id="authHeaderBtnText">Sign In</span>
+                    </button>
+                    <!-- Mobile Menu Button -->
+                    <button onclick="toggleMobileMenu()" class="md:hidden text-slate-300 p-2.5 border border-slate-800 rounded-xl hover:bg-slate-900">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-slate-900/95 border-b border-slate-800 px-4 pt-3 pb-5 space-y-2 text-xs font-semibold uppercase tracking-wider">
+            <button onclick="switchTab('submitTab'); toggleMobileMenu()" class="w-full text-left p-3 border border-slate-800 rounded-xl text-slate-200 flex items-center space-x-3 hover:bg-slate-800/60">
+                <i class="fa-solid fa-plus w-4 text-center text-teal-400"></i><span>New Report</span>
+            </button>
+            <button onclick="switchTab('myReportsTab'); toggleMobileMenu()" class="w-full text-left p-3 border border-slate-800 rounded-xl text-slate-200 flex items-center space-x-3 hover:bg-slate-800/60">
+                <i class="fa-solid fa-folder-closed w-4 text-center text-teal-400"></i><span>My Reports</span>
+            </button>
+            <button onclick="switchTab('agencyAuthTab'); toggleMobileMenu()" class="w-full text-left p-3 border border-slate-800 rounded-xl text-slate-200 flex items-center space-x-3 hover:bg-slate-800/60">
+                <i class="fa-solid fa-shield-halved w-4 text-center text-teal-400"></i><span>Agency Access</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 hidden bg-slate-900/95 text-white px-5 py-4 border border-teal-500/50 rounded-2xl shadow-2xl backdrop-blur-md flex items-center space-x-3 max-w-md transition-all duration-300">
+        <div id="toastIcon" class="w-7 h-7 bg-teal-500/20 text-teal-300 rounded-xl flex items-center justify-center font-bold text-xs shrink-0">!</div>
+        <span id="toastMsg" class="text-xs font-semibold tracking-wide">Notification message</span>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-grow w-full">
+
+        <!-- ========================================== -->
+        <!-- TAB 1: NEW REPORT SUBMISSION               -->
+        <!-- ========================================== -->
+        <section id="submitTab" class="tab-content active">
+            <div class="max-w-3xl mx-auto">
+                <div class="border border-slate-800/90 bg-slate-900/90 rounded-3xl shadow-2xl overflow-hidden backdrop-blur-xl">
+                    <!-- Form Header -->
+                    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-6 sm:p-8 border-b border-slate-800 flex justify-between items-start">
+                        <div>
+                            <span class="text-[11px] font-mono-code font-bold uppercase tracking-widest bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-3 py-1 rounded-full inline-block mb-3">Student Portal</span>
+                            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">Submit Incident Report</h1>
+                            <p class="text-xs text-slate-400 mt-1.5">Submit your grievance securely for official review and action.</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-teal-500/10 border border-teal-500/30 text-teal-400 flex items-center justify-center text-xl shadow-inner hidden sm:flex">
+                            <i class="fa-solid fa-file-pen"></i>
+                        </div>
+                    </div>
+
+                    <!-- Auth Requirement Banner (Visible only when logged out) -->
+                    <div id="formAuthBanner" class="hidden p-8 bg-slate-950/80 border-b border-slate-800 text-center space-y-4">
+                        <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl border border-teal-500/40 bg-teal-500/10 text-teal-300 mb-1">
+                            <i class="fa-solid fa-lock text-lg"></i>
+                        </div>
+                        <h3 class="text-base font-bold uppercase tracking-wider text-white">Authentication Required</h3>
+                        <p class="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">You must sign in or register an account before submitting or tracking reports.</p>
+                        <div class="flex justify-center gap-3 pt-2">
+                            <button onclick="openAuthModal('login')" class="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-950 font-extrabold px-6 py-2.5 rounded-xl text-xs uppercase tracking-wider transition shadow-md shadow-teal-500/20">Sign In</button>
+                            <button onclick="openAuthModal('signup')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-6 py-2.5 rounded-xl text-xs border border-slate-700 uppercase tracking-wider transition">Register</button>
+                        </div>
+                    </div>
+
+                    <!-- Main Submission Form -->
+                    <form id="incidentForm" onsubmit="handleReportSubmit(event)" class="p-6 sm:p-8 space-y-6">
+
+                        <!-- Anonymous Toggle Checkbox -->
+                        <div class="p-4 border border-slate-800 bg-slate-950/60 rounded-2xl flex items-start space-x-3.5">
+                            <input type="checkbox" id="anonCheck" class="mt-1 accent-teal-400 w-4 h-4 cursor-pointer rounded">
+                            <div>
+                                <label for="anonCheck" class="text-xs font-bold uppercase tracking-wider text-teal-300 cursor-pointer select-none">
+                                    Submit Anonymously
+                                </label>
+                                <p class="text-xs text-slate-400 mt-0.5 leading-relaxed">Your registered student identity will be concealed from public and agency view, but the report remains tracked in your dashboard.</p>
+                            </div>
+                        </div>
+
+                        <!-- Dropdown Controls: District & Case Urgency -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- District Dropdown -->
+                            <div>
+                                <label for="districtSelect" class="block text-xs uppercase font-bold text-slate-300 tracking-wider mb-2">
+                                    Select District <span class="text-teal-400">*</span>
+                                </label>
+                                <select id="districtSelect" required class="w-full px-4 py-3.5 bg-slate-950/90 border border-slate-700/80 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400 transition">
+                                    <option value="" disabled selected>Choose district...</option>
+                                    <option value="Wayanad">Wayanad</option>
+                                    <option value="Kozhikode">Kozhikode</option>
+                                    <option value="Ernakulam">Ernakulam</option>
+                                    <option value="Thiruvananthapuram">Thiruvananthapuram</option>
+                                    <option value="Thrissur">Thrissur</option>
+                                    <option value="Malappuram">Malappuram</option>
+                                    <option value="Kannur">Kannur</option>
+                                    <option value="Palakkad">Palakkad</option>
+                                    <option value="Kollam">Kollam</option>
+                                    <option value="Kottayam">Kottayam</option>
+                                    <option value="Alappuzha">Alappuzha</option>
+                                    <option value="Idukki">Idukki</option>
+                                    <option value="Kasaragod">Kasaragod</option>
+                                    <option value="Pathanamthitta">Pathanamthitta</option>
+                                    <option value="Other / General">Other / General</option>
+                                </select>
+                            </div>
+
+                            <!-- Case Urgency -->
+                            <div>
+                                <label for="urgencySelect" class="block text-xs uppercase font-bold text-slate-300 tracking-wider mb-2">
+                                    Case Urgency <span class="text-teal-400">*</span>
+                                </label>
+                                <select id="urgencySelect" required class="w-full px-4 py-3.5 bg-slate-950/90 border border-slate-700/80 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400 transition">
+                                    <option value="Low">Low - Inquiry / Minor Issue</option>
+                                    <option value="Medium" selected>Medium - Attention Needed</option>
+                                    <option value="High">High - Urgent Resolution Required</option>
+                                    <option value="Critical">Critical - Immediate Intervention</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Description Box -->
+                        <div>
+                            <label for="reportDescription" class="block text-xs uppercase font-bold text-slate-300 tracking-wider mb-2">
+                                Incident Description <span class="text-teal-400">*</span>
+                            </label>
+                            <textarea id="reportDescription" rows="5" required placeholder="Detail what occurred, dates, locations, and personnel involved..." class="w-full p-4 bg-slate-950/90 border border-slate-700/80 rounded-2xl text-xs text-slate-100 focus:outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400 transition leading-relaxed"></textarea>
+                        </div>
+
+                        <!-- Proof Upload (Optional) -->
+                        <div>
+                            <label class="block text-xs uppercase font-bold text-slate-300 tracking-wider mb-2">
+                                Supporting Document / Image Proof <span class="text-slate-500 font-normal">(Optional, Max 2MB)</span>
+                            </label>
+                            
+                            <div class="border-2 border-dashed border-slate-700 hover:border-teal-400 bg-slate-950/50 rounded-2xl p-6 text-center transition cursor-pointer group" onclick="document.getElementById('fileUploadInput').click()">
+                                <i class="fa-solid fa-cloud-arrow-up text-3xl text-teal-400 mb-2 group-hover:scale-110 transition-transform"></i>
+                                <p class="text-xs text-slate-200 font-bold uppercase tracking-wider">Click to Select File</p>
+                                <p id="fileNameDisplay" class="text-[11px] text-slate-400 mt-1 font-mono-code">PNG, JPG, SVG or PDF</p>
+                                <input type="file" id="fileUploadInput" accept="image/*,application/pdf" class="hidden" onchange="handleFileSelected(this)">
+                            </div>
+
+                            <!-- Preview Box -->
+                            <div id="filePreviewWrapper" class="hidden mt-4 p-3 border border-slate-800 bg-slate-950/80 rounded-xl flex items-center justify-between">
+                                <div class="flex items-center space-x-3 overflow-hidden">
+                                    <img id="filePreviewThumb" class="w-12 h-12 object-cover rounded-lg border border-slate-700 shrink-0" alt="Proof thumbnail">
+                                    <div class="truncate">
+                                        <span id="filePreviewName" class="text-xs font-mono-code text-slate-200 block truncate">file.png</span>
+                                        <span class="text-[10px] text-teal-400 font-semibold uppercase">Attachment Ready</span>
+                                    </div>
+                                </div>
+                                <button type="button" onclick="clearFileAttachment(event)" class="text-slate-400 hover:text-rose-400 px-3 py-1.5 text-xs transition">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button id="submitBtn" type="submit" class="w-full bg-gradient-to-r from-teal-500 via-emerald-400 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-950 font-black py-4 px-6 rounded-2xl transition-all shadow-xl shadow-teal-500/20 uppercase text-xs tracking-widest flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-paper-plane text-sm"></i>
+                            <span>Transmit Incident Report</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ========================================== -->
+        <!-- TAB 2: MY REPORTS & TRACKING               -->
+        <!-- ========================================== -->
+        <section id="myReportsTab" class="tab-content">
+            <div class="max-w-4xl mx-auto space-y-6">
+                <!-- Banner -->
+                <div class="border border-slate-800 bg-slate-900/90 rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl backdrop-blur-xl">
+                    <div>
+                        <span class="text-[11px] font-mono-code font-bold uppercase tracking-widest bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 px-3 py-1 rounded-full inline-block mb-2">Student Dashboard</span>
+                        <h2 class="text-2xl font-extrabold tracking-tight text-white">Track Your Grievances</h2>
+                        <p class="text-slate-400 text-xs mt-1">Real-time status updates and official agency responses.</p>
+                    </div>
+                    <button onclick="renderUserReports()" class="text-xs uppercase font-bold px-4 py-2.5 rounded-xl border border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700 transition flex items-center">
+                        <i class="fa-solid fa-rotate mr-2 text-teal-400"></i> Refresh Data
+                    </button>
+                </div>
+
+                <!-- Reports List Container -->
+                <div id="userReportsList" class="space-y-4">
+                    <!-- Dynamic rendering -->
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ========================================== -->
+        <!-- TAB 3: AGENCY AUTHENTICATION               -->
+        <!-- ========================================== -->
+        <section id="agencyAuthTab" class="tab-content">
+            <div class="max-w-md mx-auto border border-slate-800 bg-slate-900/90 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-xl">
+                <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white p-8 text-center border-b border-slate-800">
+                    <div class="w-14 h-14 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-2xl flex items-center justify-center mx-auto mb-3 text-xl shadow-inner">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <h2 class="text-xl font-extrabold tracking-tight">Agency Verification</h2>
+                    <p class="text-slate-400 text-xs mt-1">Restricted administrative access point</p>
+                </div>
+
+                <form onsubmit="handleAgencyLogin(event)" class="p-8 space-y-6">
+                    <div>
+                        <label for="agencyPasscode" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Administrative Security Key</label>
+                        <input type="password" id="agencyPasscode" required placeholder="Enter administrative passcode" class="w-full px-4 py-3.5 bg-slate-950/90 border border-slate-700/80 rounded-xl text-xs font-mono-code text-slate-100 focus:outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400 transition">
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-950 font-extrabold py-3.5 rounded-xl transition-all shadow-lg shadow-teal-500/20 text-xs uppercase tracking-widest flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-key"></i>
+                        <span>Authenticate Access</span>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+
+        <!-- ========================================== -->
+        <!-- TAB 4: AGENCY OPERATIONAL DASHBOARD        -->
+        <!-- ========================================== -->
+        <section id="agencyDashboardTab" class="tab-content">
+            <div class="max-w-6xl mx-auto space-y-6">
+                <!-- Top Command Header -->
+                <div class="border border-slate-800 bg-slate-900/90 rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-xl backdrop-blur-xl">
+                    <div>
+                        <div class="flex items-center space-x-2 mb-1.5">
+                            <span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-mono-code font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">Official Portal</span>
+                            <h2 class="text-2xl font-extrabold tracking-tight text-white">Agency Operations Portal</h2>
+                        </div>
+                        <p class="text-slate-400 text-xs">Review student issues, inspect proof, manage notification emails, and issue official progress responses.</p>
+                    </div>
+                    <button onclick="logoutAgency()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold uppercase px-4 py-2.5 rounded-xl border border-slate-700 text-xs transition flex items-center">
+                        <i class="fa-solid fa-lock mr-2 text-rose-400"></i> Lock Dashboard
+                    </button>
+                </div>
+
+                <!-- AGENCY EMAIL MANAGEMENT CARD -->
+                <div class="border border-teal-500/30 bg-slate-900/90 rounded-3xl p-6 shadow-xl backdrop-blur-xl space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                        <div>
+                            <h3 class="text-sm font-extrabold text-white uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-envelope-circle-check text-teal-400"></i>
+                                Email Recipients Management
+                            </h3>
+                            <p class="text-xs text-slate-400">Reports submitted by students will automatically trigger email notifications to these addresses.</p>
+                        </div>
+                        <span class="text-[11px] font-mono-code bg-teal-500/10 border border-teal-500/30 text-teal-300 px-3 py-1 rounded-full uppercase self-start sm:self-auto">
+                            Active Recipients: <strong id="agencyEmailCount">0</strong>
+                        </span>
+                    </div>
+
+                    <!-- Add Email Input Form -->
+                    <form onsubmit="handleAgencyAddEmail(event)" class="flex flex-col sm:flex-row gap-3">
+                        <input type="email" id="agencyEmailInput" required placeholder="Enter officer email (e.g., officer1@agency.gov)" class="flex-grow px-4 py-3 bg-slate-950 border border-slate-700/80 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-teal-400">
+                        <button type="submit" class="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-950 font-extrabold px-5 py-3 rounded-xl text-xs uppercase tracking-wider transition shadow-md shadow-teal-500/20 shrink-0 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Add Email Recipient</span>
+                        </button>
+                    </form>
+
+                    <!-- Active Email Chips List -->
+                    <div id="agencyEmailsContainer" class="flex flex-wrap gap-2 pt-2">
+                        <!-- Dynamic Email Chips -->
+                    </div>
+                </div>
+
+                <!-- Agency Controls Bar -->
+                <div class="border border-slate-800 bg-slate-950/70 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+                    <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                        <span class="font-bold text-slate-400 uppercase tracking-wider"><i class="fa-solid fa-filter mr-1 text-teal-400"></i> Filter By:</span>
+                        
+                        <select id="agencyFilterDistrict" onchange="renderAgencyDashboard()" class="bg-slate-900 border border-slate-700/80 rounded-xl text-slate-200 px-3 py-2 focus:outline-none focus:border-teal-400">
+                            <option value="ALL">All Districts</option>
+                            <option value="Wayanad">Wayanad</option>
+                            <option value="Kozhikode">Kozhikode</option>
+                            <option value="Ernakulam">Ernakulam</option>
+                            <option value="Thiruvananthapuram">Thiruvananthapuram</option>
+                            <option value="Thrissur">Thrissur</option>
+                            <option value="Malappuram">Malappuram</option>
+                            <option value="Kannur">Kannur</option>
+                            <option value="Palakkad">Palakkad</option>
+                            <option value="Kollam">Kollam</option>
+                            <option value="Kottayam">Kottayam</option>
+                            <option value="Alappuzha">Alappuzha</option>
+                            <option value="Idukki">Idukki</option>
+                            <option value="Kasaragod">Kasaragod</option>
+                            <option value="Pathanamthitta">Pathanamthitta</option>
+                        </select>
+
+                        <select id="agencyFilterUrgency" onchange="renderAgencyDashboard()" class="bg-slate-900 border border-slate-700/80 rounded-xl text-slate-200 px-3 py-2 focus:outline-none focus:border-teal-400">
+                            <option value="ALL">All Urgencies</option>
+                            <option value="Critical">Critical</option>
+                            <option value="High">High</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+                    </div>
+
+                    <div class="text-slate-400 uppercase font-semibold">
+                        Total Reports Logged: <span id="agencyReportCounter" class="text-teal-400 font-extrabold text-sm ml-1">0</span>
+                    </div>
+                </div>
+
+                <!-- Stream of Reports -->
+                <div id="agencyReportsStream" class="space-y-6">
+                    <!-- Dynamic contents -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-800/80 bg-slate-950 py-8 text-center text-xs text-slate-500 font-mono-code">
+        <div class="max-w-7xl mx-auto px-4 space-y-2">
+            <p>© 2026 EDURESOLVE STUDENT REPORTING SYSTEM. ALL RIGHTS RESERVED.</p>
+            <p class="text-[11px] text-slate-600">VIBRANT EMERALD & CYAN EDITION • GITHUB PAGES READY</p>
+        </div>
+    </footer>
+
+    <!-- AUTHENTICATION MODAL (STRICT REGISTRATION / SIGN IN) -->
+    <div id="authModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="border border-slate-800 bg-slate-900 max-w-sm w-full rounded-3xl overflow-hidden shadow-2xl">
+            <!-- Modal Header -->
+            <div class="bg-gradient-to-r from-slate-900 to-slate-800 text-white p-5 flex justify-between items-center border-b border-slate-800">
+                <span class="font-extrabold text-xs uppercase tracking-widest text-teal-400" id="authModalTitle">Student Access</span>
+                <button onclick="closeAuthModal()" class="text-slate-400 hover:text-white transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="p-6">
+                <!-- Auth Tabs -->
+                <div class="flex border-b border-slate-800 mb-6 text-xs uppercase font-bold">
+                    <button id="authTabLogin" onclick="switchAuthSubTab('login')" class="flex-1 py-2.5 text-center border-b-2 border-teal-400 text-teal-300">
+                        Sign In
+                    </button>
+                    <button id="authTabSignup" onclick="switchAuthSubTab('signup')" class="flex-1 py-2.5 text-center border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+                        Register
+                    </button>
+                </div>
+
+                <!-- Sign In Form -->
+                <form id="loginForm" onsubmit="handleUserSignIn(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs uppercase font-bold text-slate-300 mb-1.5">Student Name</label>
+                        <input type="text" id="loginName" required placeholder="Enter registered name" class="w-full px-4 py-3 bg-slate-950 border border-slate-700/80 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-teal-400">
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase font-bold text-slate-300 mb-1.5">Password</label>
+                        <input type="password" id="loginPassword" required placeholder="Enter password" class="w-full px-4 py-3 bg-slate-950 border border-slate-700/80 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-teal-400">
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-950 font-extrabold py-3.5 rounded-xl transition text-xs uppercase tracking-wider shadow-md shadow-teal-500/20">
+                        Sign In
+                    </button>
+                </form>
+
+                <!-- Sign Up / Registration Form -->
+                <form id="signupForm" onsubmit="handleUserSignUp(event)" class="space-y-4 hidden">
+                    <div>
+                        <label class="block text-xs uppercase font-bold text-slate-300 mb-1.5">Full Name</label>
+                        <input type="text" id="signupName" required placeholder="e.g. Ananya Nair" class="w-full px-4 py-3 bg-slate-950 border border-slate-700/80 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-teal-400">
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase font-bold text-slate-300 mb-1.5">Create Password</label>
+                        <input type="password" id="signupPassword" required placeholder="Create custom password" class="w-full px-4 py-3 bg-slate-950 border border-slate-700/80 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-teal-400">
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-950 font-extrabold py-3.5 rounded-xl transition text-xs uppercase tracking-wider shadow-md shadow-teal-500/20">
+                        Create Account
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- EVIDENCE MODAL PREVIEW -->
+    <div id="evidenceModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="border border-slate-800 bg-slate-900 max-w-2xl w-full p-4 rounded-3xl space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <span class="text-xs font-bold uppercase text-slate-200"><i class="fa-solid fa-file-image mr-2 text-teal-400"></i> Evidence Viewer</span>
+                <button onclick="closeEvidenceModal()" class="text-slate-400 hover:text-white transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="max-h-[70vh] overflow-auto flex justify-center bg-slate-950 p-3 rounded-2xl border border-slate-800">
+                <img id="evidenceModalImg" src="" class="max-w-full h-auto object-contain rounded-xl" alt="Full evidence view">
+            </div>
+        </div>
+    </div>
+
+    <!-- EMAIL PREVIEW / DISPATCH MODAL -->
+    <div id="emailDispatchModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="border border-slate-800 bg-slate-900 max-w-xl w-full p-6 rounded-3xl space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-paper-plane text-teal-400 text-sm"></i>
+                    <span class="text-xs font-bold uppercase text-white">Agency Email Notification Dispatched</span>
+                </div>
+                <button onclick="closeEmailDispatchModal()" class="text-slate-400 hover:text-white transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="text-xs text-slate-300 space-y-2">
+                <p>The following notification was routed to active agency emails:</p>
+                <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 font-mono-code text-[11px] text-teal-300 overflow-x-auto" id="emailDispatchRecipients">
+                    Recipients: none
+                </div>
+                <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 text-xs text-slate-200 whitespace-pre-line max-h-48 overflow-y-auto leading-relaxed" id="emailDispatchBody">
+                    Notification text...
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-2">
+                <button onclick="triggerMailtoClient()" class="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-950 font-extrabold px-4 py-2.5 rounded-xl text-xs uppercase tracking-wider transition">
+                    <i class="fa-solid fa-envelope mr-1"></i> Open Mail Client
+                </button>
+                <button onclick="closeEmailDispatchModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-4 py-2.5 rounded-xl text-xs uppercase tracking-wider border border-slate-700 transition">
+                    Dismiss
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC ENGINE -->
+    <script>
+        // ==========================================
+        // STORAGE KEYS & CONSTANTS
+        // ==========================================
+        const KEY_USERS = 'eduresolve_users_v2';
+        const KEY_REPORTS = 'eduresolve_reports_v2';
+        const KEY_CURRENT_USER = 'eduresolve_current_user_v2';
+        const KEY_AGENCY_EMAILS = 'eduresolve_agency_emails_v1';
+        const AGENCY_PASSCODE_KEY = 'rimshaagency26';
+
+        let currentUser = null;
+        let isAgencyAuthenticated = false;
+        let fileBase64Data = null;
+        let activeDispatchMailto = '';
+
+        // Initialize state on window load
+        window.onload = function() {
+            initLocalStorage();
+            loadSessionUser();
+        };
+
+        function initLocalStorage() {
+            if (!localStorage.getItem(KEY_USERS)) {
+                localStorage.setItem(KEY_USERS, JSON.stringify([]));
+            }
+            if (!localStorage.getItem(KEY_AGENCY_EMAILS)) {
+                // Seed default agency recipient email
+                localStorage.setItem(KEY_AGENCY_EMAILS, JSON.stringify(['official.agency@edu.gov']));
+            }
+            if (!localStorage.getItem(KEY_REPORTS)) {
+                // Seed initial demo data for smooth demonstration
+                const sampleReports = [
+                    {
+                        id: 'REP-' + Math.floor(100000 + Math.random() * 900000),
+                        authorName: 'Siddharth Menon',
+                        isAnonymous: false,
+                        district: 'Wayanad',
+                        urgency: 'High',
+                        description: 'Computer lab workstation monitors in Block B are non-functional, hindering project work.',
+                        fileData: null,
+                        timestamp: new Date().toLocaleString(),
+                        status: 'Under Investigation',
+                        agencyResponse: 'We are researching with your report and have dispatched maintenance staff.',
+                        updatedAt: new Date().toLocaleString()
+                    }
+                ];
+                localStorage.setItem(KEY_REPORTS, JSON.stringify(sampleReports));
+            }
+        }
+
+        // ==========================================
+        // AUTHENTICATION LOGIC (NO GUEST ALLOWED)
+        // ==========================================
+        function loadSessionUser() {
+            const stored = localStorage.getItem(KEY_CURRENT_USER);
+            if (stored) {
+                try {
+                    currentUser = JSON.parse(stored);
+                    updateUserUI();
+                } catch (e) {
+                    currentUser = null;
+                    updateUserUI();
+                }
+            } else {
+                currentUser = null;
+                updateUserUI();
+            }
+        }
+
+        function updateUserUI() {
+            const userBadge = document.getElementById('userBadge');
+            const userNameDisplay = document.getElementById('userNameDisplay');
+            const authHeaderBtn = document.getElementById('authHeaderBtn');
+            const authHeaderBtnText = document.getElementById('authHeaderBtnText');
+            const formAuthBanner = document.getElementById('formAuthBanner');
+            const incidentForm = document.getElementById('incidentForm');
+
+            if (currentUser) {
+                userBadge.classList.remove('hidden');
+                userBadge.classList.add('flex');
+                userNameDisplay.innerText = currentUser.name;
+                authHeaderBtnText.innerText = 'Sign Out';
+                authHeaderBtn.onclick = handleUserSignOut;
+
+                formAuthBanner.classList.add('hidden');
+                incidentForm.classList.remove('opacity-40', 'pointer-events-none');
+            } else {
+                userBadge.classList.add('hidden');
+                userBadge.classList.remove('flex');
+                authHeaderBtnText.innerText = 'Sign In';
+                authHeaderBtn.onclick = () => openAuthModal('login');
+
+                formAuthBanner.classList.remove('hidden');
+                incidentForm.classList.add('opacity-40', 'pointer-events-none');
+            }
+
+            renderUserReports();
+        }
+
+        function openAuthModal(mode = 'login') {
+            document.getElementById('authModal').classList.remove('hidden');
+            switchAuthSubTab(mode);
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.add('hidden');
+        }
+
+        function switchAuthSubTab(mode) {
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const tabLogin = document.getElementById('authTabLogin');
+            const tabSignup = document.getElementById('authTabSignup');
+
+            if (mode === 'login') {
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+                tabLogin.className = "flex-1 py-2 text-center border-b-2 border-white text-white";
+                tabSignup.className = "flex-1 py-2 text-center border-b-2 border-transparent text-neutral-500 hover:text-white";
+            } else {
+                loginForm.classList.add('hidden');
+                signupForm.classList.remove('hidden');
+                tabSignup.className = "flex-1 py-2 text-center border-b-2 border-white text-white";
+                tabLogin.className = "flex-1 py-2 text-center border-b-2 border-transparent text-neutral-500 hover:text-white";
+            }
+        }
+
+        function handleUserSignUp(event) {
+            event.preventDefault();
+            const name = document.getElementById('signupName').value.trim();
+            const password = document.getElementById('signupPassword').value;
+
+            const users = JSON.parse(localStorage.getItem(KEY_USERS) || '[]');
+            if (users.some(u => u.name.toLowerCase() === name.toLowerCase())) {
+                showToast('An account with this name already exists', true);
+                return;
+            }
+
+            const newUser = { name, password, registeredAt: new Date().toISOString() };
+            users.push(newUser);
+            localStorage.setItem(KEY_USERS, JSON.stringify(users));
+
+            currentUser = newUser;
+            localStorage.setItem(KEY_CURRENT_USER, JSON.stringify(newUser));
+            
+            showToast(`Account created for ${name}`);
+            closeAuthModal();
+            updateUserUI();
+        }
+
+        function handleUserSignIn(event) {
+            event.preventDefault();
+            const name = document.getElementById('loginName').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            const users = JSON.parse(localStorage.getItem(KEY_USERS) || '[]');
+            const found = users.find(u => u.name.toLowerCase() === name.toLowerCase() && u.password === password);
+
+            if (!found) {
+                showToast('Invalid name or password', true);
+                return;
+            }
+
+            currentUser = found;
+            localStorage.setItem(KEY_CURRENT_USER, JSON.stringify(found));
+
+            showToast(`Signed in as ${found.name}`);
+            closeAuthModal();
+            updateUserUI();
+        }
+
+        function handleUserSignOut() {
+            currentUser = null;
+            localStorage.removeItem(KEY_CURRENT_USER);
+            showToast('Signed out of session');
+            updateUserUI();
+        }
+
+        // ==========================================
+        // NAVIGATION & TAB MANAGEMENT
+        // ==========================================
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+
+            if (tabId === 'agencyAuthTab' && isAgencyAuthenticated) {
+                tabId = 'agencyDashboardTab';
+                renderAgencyDashboard();
+            }
+
+            const target = document.getElementById(tabId);
+            if (target) {
+                target.classList.add('active');
+            }
+
+            // Update Header Nav highlights
+            const navMap = {
+                'submitTab': 'navSubmit',
+                'myReportsTab': 'navMyReports',
+                'agencyAuthTab': 'navAgency',
+                'agencyDashboardTab': 'navAgency'
+            };
+
+            ['navSubmit', 'navMyReports', 'navAgency'].forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    if (id === navMap[tabId]) {
+                        btn.className = "nav-btn px-4 py-2.5 rounded-xl border border-teal-500/50 bg-teal-500/10 text-teal-300 font-bold transition flex items-center space-x-2 shadow-sm";
+                    } else {
+                        btn.className = "nav-btn px-4 py-2.5 rounded-xl border border-transparent text-slate-400 hover:text-white hover:bg-slate-800/50 transition flex items-center space-x-2";
+                    }
+                }
+            });
+
+            if (tabId === 'myReportsTab') {
+                renderUserReports();
+            }
+        }
+
+        function handleLogoClick() {
+            switchTab('submitTab');
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        }
+
+        // ==========================================
+        // FILE ATTACHMENT HANDLING
+        // ==========================================
+        function handleFileSelected(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            if (file.size > 2 * 1024 * 1024) {
+                showToast('File size must be under 2MB', true);
+                input.value = '';
+                return;
+            }
+
+            document.getElementById('fileNameDisplay').innerText = file.name;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                fileBase64Data = e.target.result;
+                const wrapper = document.getElementById('filePreviewWrapper');
+                const thumb = document.getElementById('filePreviewThumb');
+                const nameLabel = document.getElementById('filePreviewName');
+
+                nameLabel.innerText = file.name;
+                if (file.type.startsWith('image/')) {
+                    thumb.src = fileBase64Data;
+                } else {
+                    thumb.src = 'https://placehold.co/100x100/000000/ffffff?text=DOC';
+                }
+                wrapper.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearFileAttachment(e) {
+            if (e) e.stopPropagation();
+            document.getElementById('fileUploadInput').value = '';
+            document.getElementById('fileNameDisplay').innerText = 'PNG, JPG, SVG or PDF';
+            document.getElementById('filePreviewWrapper').classList.add('hidden');
+            fileBase64Data = null;
+        }
+
+        // ==========================================
+        // REPORT SUBMISSION LOGIC
+        // ==========================================
+        function handleReportSubmit(event) {
+            event.preventDefault();
+
+            if (!currentUser) {
+                showToast('Please sign in to submit a report', true);
+                openAuthModal('login');
+                return;
+            }
+
+            const isAnonymous = document.getElementById('anonCheck').checked;
+            const district = document.getElementById('districtSelect').value;
+            const urgency = document.getElementById('urgencySelect').value;
+            const description = document.getElementById('reportDescription').value.trim();
+
+            if (!district) {
+                showToast('Please select a district', true);
+                return;
+            }
+
+            const newReport = {
+                id: 'REP-' + Math.floor(100000 + Math.random() * 900000),
+                authorName: currentUser.name,
+                isAnonymous: isAnonymous,
+                district: district,
+                urgency: urgency,
+                description: description,
+                fileData: fileBase64Data,
+                timestamp: new Date().toLocaleString(),
+                status: 'Submitted / Pending',
+                agencyResponse: '',
+                updatedAt: new Date().toLocaleString()
+            };
+
+            const reports = JSON.parse(localStorage.getItem(KEY_REPORTS) || '[]');
+            reports.unshift(newReport);
+            localStorage.setItem(KEY_REPORTS, JSON.stringify(reports));
+
+            // Reset form
+            document.getElementById('incidentForm').reset();
+            clearFileAttachment();
+
+            showToast(`Report ${newReport.id} logged!`);
+            
+            // Trigger multi-email notification dispatch to agency recipient emails
+            dispatchReportEmailNotification(newReport);
+
+            switchTab('myReportsTab');
+        }
+
+        // ==========================================
+        // AGENCY EMAIL NOTIFICATION ROUTER
+        // ==========================================
+        function getAgencyEmails() {
+            return JSON.parse(localStorage.getItem(KEY_AGENCY_EMAILS) || '[]');
+        }
+
+        function handleAgencyAddEmail(event) {
+            event.preventDefault();
+            const input = document.getElementById('agencyEmailInput');
+            const email = input.value.trim().toLowerCase();
+
+            if (!email) return;
+
+            const emails = getAgencyEmails();
+            if (emails.includes(email)) {
+                showToast('Email is already registered in agency list', true);
+                return;
+            }
+
+            emails.push(email);
+            localStorage.setItem(KEY_AGENCY_EMAILS, JSON.stringify(emails));
+            input.value = '';
+            showToast(`Added ${email} to recipient list`);
+            renderAgencyEmails();
+        }
+
+        function handleAgencyRemoveEmail(emailToRemove) {
+            let emails = getAgencyEmails();
+            emails = emails.filter(e => e !== emailToRemove);
+            localStorage.setItem(KEY_AGENCY_EMAILS, JSON.stringify(emails));
+            showToast(`Removed ${emailToRemove}`);
+            renderAgencyEmails();
+        }
+
+        function renderAgencyEmails() {
+            const container = document.getElementById('agencyEmailsContainer');
+            const countLabel = document.getElementById('agencyEmailCount');
+            const emails = getAgencyEmails();
+
+            if (countLabel) countLabel.innerText = emails.length;
+
+            if (!container) return;
+
+            if (emails.length === 0) {
+                container.innerHTML = `<span class="text-xs text-rose-400 italic">No email recipients added yet. Reports will only remain stored in dashboard.</span>`;
+                return;
+            }
+
+            container.innerHTML = emails.map(email => `
+                <div class="bg-slate-950 border border-slate-700/80 hover:border-teal-400 px-3 py-1.5 rounded-xl flex items-center space-x-2 text-xs font-mono-code text-slate-200">
+                    <i class="fa-solid fa-envelope text-teal-400 text-[10px]"></i>
+                    <span>${email}</span>
+                    <button type="button" onclick="handleAgencyRemoveEmail('${email}')" class="text-slate-500 hover:text-rose-400 ml-1 transition">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function dispatchReportEmailNotification(report) {
+            const agencyEmails = getAgencyEmails();
+            if (agencyEmails.length === 0) return;
+
+            const recipientStr = agencyEmails.join(',');
+            const authorText = report.isAnonymous ? 'ANONYMOUS STUDENT' : report.authorName;
+            
+            const subject = encodeURIComponent(`[EduResolve Alert] New Incident ${report.id} - District: ${report.district} (${report.urgency} Urgency)`);
+            const bodyText = `NEW INCIDENT REPORT LOGGED\n` +
+                             `----------------------------------------\n` +
+                             `Report ID   : ${report.id}\n` +
+                             `Timestamp   : ${report.timestamp}\n` +
+                             `District    : ${report.district}\n` +
+                             `Urgency     : ${report.urgency}\n` +
+                             `Submitted By: ${authorText}\n` +
+                             `Proof Attached: ${report.fileData ? 'YES (View in Portal)' : 'NO'}\n\n` +
+                             `DESCRIPTION:\n${report.description}\n\n` +
+                             `----------------------------------------\n` +
+                             `Please log into the EduResolve Agency Portal to investigate and update resolution status.`;
+
+            activeDispatchMailto = `mailto:${recipientStr}?subject=${subject}&body=${encodeURIComponent(bodyText)}`;
+
+            // Populate dispatch modal UI
+            document.getElementById('emailDispatchRecipients').innerText = `To (${agencyEmails.length}): ` + agencyEmails.join(', ');
+            document.getElementById('emailDispatchBody').innerText = bodyText;
+            document.getElementById('emailDispatchModal').classList.remove('hidden');
+        }
+
+        function triggerMailtoClient() {
+            if (activeDispatchMailto) {
+                window.location.href = activeDispatchMailto;
+            }
+        }
+
+        function closeEmailDispatchModal() {
+            document.getElementById('emailDispatchModal').classList.add('hidden');
+        }
+
+        // ==========================================
+        // STUDENT DASHBOARD RENDERER
+        // ==========================================
+        function renderUserReports() {
+            const container = document.getElementById('userReportsList');
+            const reports = JSON.parse(localStorage.getItem(KEY_REPORTS) || '[]');
+
+            if (!currentUser) {
+                container.innerHTML = `
+                    <div class="border border-slate-800 bg-slate-900/90 rounded-3xl p-12 text-center">
+                        <i class="fa-solid fa-lock text-3xl text-slate-600 mb-3"></i>
+                        <h3 class="text-xs uppercase font-bold text-white">Sign In Required</h3>
+                        <p class="text-xs text-slate-500 mt-1">Authenticate your account to view your report history.</p>
+                        <button onclick="openAuthModal('login')" class="mt-4 bg-teal-500 text-slate-950 font-extrabold px-5 py-2.5 rounded-xl text-xs uppercase shadow-md shadow-teal-500/20">Sign In Now</button>
+                    </div>
+                `;
+                return;
+            }
+
+            const userReports = reports.filter(r => r.authorName === currentUser.name);
+
+            if (userReports.length === 0) {
+                container.innerHTML = `
+                    <div class="border border-slate-800 bg-slate-900/90 rounded-3xl p-12 text-center">
+                        <i class="fa-solid fa-folder-open text-3xl text-slate-600 mb-3"></i>
+                        <h3 class="text-xs uppercase font-bold text-white">No Reports Submitted Yet</h3>
+                        <p class="text-xs text-slate-500 mt-1">Submit your first report using the form above.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = userReports.map(report => {
+                return `
+                    <div class="border border-slate-800 bg-slate-900/90 rounded-3xl p-6 space-y-4 shadow-xl">
+                        <!-- Card Header -->
+                        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
+                            <div class="flex items-center space-x-3">
+                                <span class="font-mono-code text-xs font-bold bg-teal-500/20 text-teal-300 border border-teal-500/40 px-3 py-1 rounded-lg">${report.id}</span>
+                                <span class="text-xs text-slate-400">${report.timestamp}</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                ${getUrgencyBadge(report.urgency)}
+                                ${getStatusBadge(report.status)}
+                            </div>
+                        </div>
+
+                        <!-- Card Body -->
+                        <div class="space-y-2">
+                            <div class="text-xs text-slate-300 uppercase font-semibold">
+                                District: <span class="text-teal-400 font-bold">${report.district}</span>
+                                ${report.isAnonymous ? `<span class="ml-2 text-slate-500 font-normal">(Submitted Anonymously)</span>` : ''}
+                            </div>
+                            <p class="text-xs text-slate-200 leading-relaxed whitespace-pre-line bg-slate-950/80 p-4 rounded-2xl border border-slate-800">${escapeHTML(report.description)}</p>
+                        </div>
+
+                        <!-- Evidence File Attachment -->
+                        ${report.fileData ? `
+                            <div>
+                                <span class="text-[11px] font-bold uppercase text-slate-400 block mb-1">Attached Evidence:</span>
+                                <button onclick="openEvidenceModal('${report.fileData}')" class="bg-slate-950 border border-slate-700/80 hover:border-teal-400 px-3 py-2 rounded-xl text-xs text-slate-200 flex items-center space-x-2 transition">
+                                    <i class="fa-solid fa-paperclip text-teal-400"></i>
+                                    <span>Inspect Proof Attachment</span>
+                                </button>
+                            </div>
+                        ` : ''}
+
+                        <!-- Agency Progress Updates -->
+                        <div class="border border-emerald-500/40 bg-emerald-950/20 p-4 rounded-2xl space-y-1">
+                            <div class="flex items-center justify-between text-xs font-bold uppercase text-emerald-300">
+                                <span><i class="fa-solid fa-building-columns mr-1.5"></i> Agency Progress Tracker</span>
+                                <span class="text-[10px] text-slate-400 font-normal">${report.updatedAt || report.timestamp}</span>
+                            </div>
+                            <p class="text-xs text-slate-300 italic pt-1">
+                                ${report.agencyResponse ? escapeHTML(report.agencyResponse) : 'Your report has been received and is queued for officer evaluation.'}
+                            </p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==========================================
+        // AGENCY PORTAL AUTH & DASHBOARD
+        // ==========================================
+        function handleAgencyLogin(event) {
+            event.preventDefault();
+            const passcode = document.getElementById('agencyPasscode').value;
+
+            if (passcode === AGENCY_PASSCODE_KEY) {
+                isAgencyAuthenticated = true;
+                showToast('Agency key verified');
+                switchTab('agencyDashboardTab');
+            } else {
+                showToast('Invalid security key', true);
+            }
+        }
+
+        function logoutAgency() {
+            isAgencyAuthenticated = false;
+            document.getElementById('agencyPasscode').value = '';
+            showToast('Agency portal locked');
+            switchTab('agencyAuthTab');
+        }
+
+        function renderAgencyDashboard() {
+            if (!isAgencyAuthenticated) return;
+
+            // Render recipient emails management panel
+            renderAgencyEmails();
+
+            const container = document.getElementById('agencyReportsStream');
+            const reports = JSON.parse(localStorage.getItem(KEY_REPORTS) || '[]');
+            const distFilter = document.getElementById('agencyFilterDistrict').value;
+            const urgFilter = document.getElementById('agencyFilterUrgency').value;
+
+            let filtered = reports.filter(r => {
+                const matchDist = distFilter === 'ALL' || r.district === distFilter;
+                const matchUrg = urgFilter === 'ALL' || r.urgency === urgFilter;
+                return matchDist && matchUrg;
+            });
+
+            document.getElementById('agencyReportCounter').innerText = filtered.length;
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="border border-slate-800 bg-slate-900/90 rounded-3xl p-12 text-center text-xs text-slate-500 uppercase font-semibold">
+                        No incident reports matching active filter criteria.
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map(report => {
+                const displayAuthor = report.isAnonymous ? 'ANONYMOUS STUDENT' : report.authorName;
+
+                return `
+                    <div class="border border-slate-800 bg-slate-900/90 rounded-3xl p-6 space-y-4 shadow-xl">
+                        <!-- Top Header -->
+                        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
+                            <div class="flex items-center space-x-3">
+                                <span class="font-mono-code text-xs font-bold bg-teal-500/20 text-teal-300 border border-teal-500/40 px-3 py-1 rounded-lg">${report.id}</span>
+                                <span class="text-xs uppercase font-bold text-slate-200">${report.district}</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                ${getUrgencyBadge(report.urgency)}
+                                ${getStatusBadge(report.status)}
+                            </div>
+                        </div>
+
+                        <!-- Content Metadata -->
+                        <div class="space-y-2">
+                            <div class="text-[11px] text-slate-400">
+                                Submitted: ${report.timestamp} | Author: <span class="text-teal-300 font-bold">${displayAuthor}</span>
+                            </div>
+                            <p class="text-xs text-slate-200 leading-relaxed bg-slate-950/80 p-4 rounded-2xl border border-slate-800">${escapeHTML(report.description)}</p>
+                        </div>
+
+                        <!-- File Proof -->
+                        ${report.fileData ? `
+                            <div>
+                                <button onclick="openEvidenceModal('${report.fileData}')" class="bg-slate-950 border border-slate-700 hover:border-teal-400 px-3 py-2 rounded-xl text-xs text-slate-200 flex items-center space-x-2 transition">
+                                    <i class="fa-solid fa-file-shield text-teal-400"></i>
+                                    <span>View Uploaded Proof / Attachment</span>
+                                </button>
+                            </div>
+                        ` : ''}
+
+                        <!-- Update Status Form -->
+                        <div class="bg-slate-950/80 border border-slate-800 p-4 rounded-2xl space-y-3">
+                            <div class="text-xs font-bold uppercase text-slate-200">
+                                <i class="fa-solid fa-pen-to-square mr-1.5 text-teal-400"></i> Update Resolution Status & Official Response
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Select Case Status</label>
+                                    <select id="statusSelect_${report.id}" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl text-xs text-slate-200 px-3 py-2.5 focus:outline-none focus:border-teal-400">
+                                        <option value="Submitted / Pending" ${report.status === 'Submitted / Pending' ? 'selected' : ''}>Pending Review</option>
+                                        <option value="Under Investigation" ${report.status === 'Under Investigation' ? 'selected' : ''}>Under Investigation</option>
+                                        <option value="Action Initiated" ${report.status === 'Action Initiated' ? 'selected' : ''}>Action Initiated</option>
+                                        <option value="Resolved" ${report.status === 'Resolved' ? 'selected' : ''}>Resolved</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Official Progress Description (Visible to Student)</label>
+                                <textarea id="agencyDesc_${report.id}" rows="2" placeholder="e.g. We are researching with your report and have scheduled..." class="w-full bg-slate-900 border border-slate-700/80 rounded-xl text-xs text-slate-200 p-3 focus:outline-none focus:border-teal-400">${report.agencyResponse || ''}</textarea>
+                            </div>
+
+                            <div class="flex justify-end">
+                                <button onclick="saveAgencyUpdate('${report.id}')" class="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-950 font-extrabold px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider transition shadow-md shadow-teal-500/20">
+                                    Publish Progress Update
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function saveAgencyUpdate(reportId) {
+            const reports = JSON.parse(localStorage.getItem(KEY_REPORTS) || '[]');
+            const index = reports.findIndex(r => r.id === reportId);
+
+            if (index !== -1) {
+                const newStatus = document.getElementById(`statusSelect_${reportId}`).value;
+                const newResponse = document.getElementById(`agencyDesc_${reportId}`).value.trim();
+
+                reports[index].status = newStatus;
+                reports[index].agencyResponse = newResponse;
+                reports[index].updatedAt = new Date().toLocaleString();
+
+                localStorage.setItem(KEY_REPORTS, JSON.stringify(reports));
+                showToast(`Updated record ${reportId}`);
+                renderAgencyDashboard();
+            }
+        }
+
+        // ==========================================
+        // MODALS & UTILITIES
+        // ==========================================
+        function openEvidenceModal(src) {
+            document.getElementById('evidenceModalImg').src = src;
+            document.getElementById('evidenceModal').classList.remove('hidden');
+        }
+
+        function closeEvidenceModal() {
+            document.getElementById('evidenceModal').classList.add('hidden');
+        }
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastMsg.innerText = message;
+            toastIcon.innerText = isError ? "✕" : "✓";
+
+            toast.classList.remove('hidden');
+
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        function getUrgencyBadge(urgency) {
+            switch (urgency) {
+                case 'Critical':
+                    return `<span class="bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">Critical</span>`;
+                case 'High':
+                    return `<span class="bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">High</span>`;
+                case 'Medium':
+                    return `<span class="bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">Medium</span>`;
+                default:
+                    return `<span class="bg-slate-800 text-slate-400 border border-slate-700 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">Low</span>`;
+            }
+        }
+
+        function getStatusBadge(status) {
+            switch (status) {
+                case 'Resolved':
+                    return `<span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider">[RESOLVED]</span>`;
+                case 'Action Initiated':
+                    return `<span class="bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">[ACTION TAKEN]</span>`;
+                case 'Under Investigation':
+                    return `<span class="bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">[INVESTIGATING]</span>`;
+                default:
+                    return `<span class="border border-slate-700 text-slate-400 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">[PENDING]</span>`;
+            }
+        }
+
+        function getStatusBadge(status) {
+            switch (status) {
+                case 'Resolved':
+                    return `<span class="bg-white text-black text-[10px] font-mono-code font-extrabold px-2 py-0.5 uppercase tracking-wider">[RESOLVED]</span>`;
+                case 'Action Initiated':
+                    return `<span class="bg-neutral-800 text-white text-[10px] font-mono-code font-bold px-2 py-0.5 uppercase tracking-wider">[ACTION TAKEN]</span>`;
+                case 'Under Investigation':
+                    return `<span class="bg-neutral-900 text-neutral-300 border border-neutral-700 text-[10px] font-mono-code font-bold px-2 py-0.5 uppercase tracking-wider">[INVESTIGATING]</span>`;
+                default:
+                    return `<span class="border border-neutral-700 text-neutral-400 text-[10px] font-mono-code px-2 py-0.5 uppercase tracking-wider">[PENDING]</span>`;
+            }
+        }
+
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.replace(/[&<>'"]/g, 
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag] || tag)
+            );
+        }
+    </script>
+</body>
+</html>
